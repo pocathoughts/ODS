@@ -1,5 +1,5 @@
 figure,
-img = imread('fundus3.png');
+img = imread('fundus2.png');
 gray = rgb2gray(img);
 J = imadjust(gray);
 im = im2bw(img);
@@ -70,6 +70,36 @@ butter = imread('Funfinal labels.png');
 subplot(3,4,3);
 imshow(butter);
 title('butter');
-toc;
+
 %%%%%%%END OF WORKING SHIT%%%%%%%%%%%%%%%
+
+
+imbut = im2bw(butter);
+
+Z = edge(imbut, 'canny',0.75);
+
+imwrite(uint8(Z*255),'Fedge.png');
+
+imbut=double(imbut);
+imbut=gaussianBlur(imbut,3);
+imwrite(uint8(imbut),'Fblurred image.png');
+
+k=2;
+EM_iter=10; % max num of iterations
+MAP_iter=10; % max num of iterations
+
+tic;
+fprintf('Performing k-means segmentation\n');
+[X, mu, sigma]=image_kmeans(imbut,k);
+imwrite(uint8(X*120),'Finitial labels.png');
+
+[X, mu, sigma]=HMRF_EM(X,imbut,Z,mu,sigma,k,EM_iter,MAP_iter);
+imwrite(uint8(X*120),'FINALofallIMAGES.png');
+
+final = imread('FINALofallIMAGES.png');
+subplot(3,4,4);
+imshow(final);
+title('donezo');
+
+toc;
 
