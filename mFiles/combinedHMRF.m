@@ -97,9 +97,12 @@ imwrite(uint8(X*120),'Finitial labels.png');
 imwrite(uint8(X*120),'FINALofallIMAGES.png');
 
 final = imread('FINALofallIMAGES.png');
+final = im2bw(final);
+
 subplot(3,4,4);
 imshow(final);
 title('donezo');
+
 
 toc;
 
