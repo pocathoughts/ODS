@@ -1,4 +1,4 @@
-img = imread('gs2.jpg');
+img = imread('gs3.jpg');
 
 gray = rgb2gray(img);
 Supa_grayfundus = imadjust(gray);
@@ -28,8 +28,14 @@ rgbFundus = cat(3, Supa_grayfundus, Supa_grayfundus, Supa_grayfundus);
 % hsvfundus = rgb2hsv(rgbImage);
 [bw, maskedRGBImage] = BestHSVMask(rgbFundus); 
 
-imshow(grayfundus);
-title('grayfundus');
+BW2 = bwareaopen(bw, 200);
+
+SE = strel('disk', 15);
+BW2 = imdilate(BW2,SE);
+
+
+imshow(BW2);
+title('after opening function');
 
 figure,
 imshow(betterFundus);
