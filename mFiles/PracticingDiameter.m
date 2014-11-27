@@ -1,19 +1,47 @@
-img = imread('gs3.jpg');
+img = imread('gs4.jpg');
+
+imshow(img);
+title('original image');
+gray = rgb2gray(img);
+Supa_grayfundus = imadjust(gray);
+
+betterFundus = adapthisteq(Supa_grayfundus);
+
+rgbFundus = cat(3, Supa_grayfundus, Supa_grayfundus, Supa_grayfundus);
+
+[bw, maskedRGBImage] = BestHSVMask(rgbFundus); 
+
+BW2 = bwareaopen(bw, 200);
+
+SE = strel('disk', 10);
+BW2 = imdilate(BW2,SE);
 
 
-bw = im2bw(img);
-BW2 = bwareaopen(bw, 50);
 
 figure,
+
 imshow(BW2);
 title('binary image');
 
+imshow(img);
+title('original image');
 hold on,
 
-[width_coord, height_coord, approx_vertical_diameter] = VerticalDiameter(BW2);
+[width_coordH, height_coordH, approx_horiz_diameter] = HorizontalDiameter(BW2);
+[width_coordV, height_coordV, approx_vertical_diameter] = VerticalDiameter(BW2);
 
-plot([width_coord(1),width_coord(2)],[height_coord(1),height_coord(2)],'Color','r','LineWidth',2)
+plot([height_coordH(1),height_coordH(2)],[width_coordH(1),width_coordH(2)],'Color','g','LineWidth',2)
+plot([width_coordV(1),width_coordV(2)],[height_coordV(1),height_coordV(2)],'Color','g','LineWidth',2)
 
+[x, y] = getCenterPoint(BW2);
+
+radius = 0;
+radius = approx_vertical_diameter /2 ;
+
+center = cat(2, x, y);
+
+
+viscircles(center, radius);
 % %# read and display image
 % img = imread('autumn.tif');
 % figure,imshow(img)
