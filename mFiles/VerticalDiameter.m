@@ -72,7 +72,7 @@ disp('the bottom index x value is');
 
 disp(bottom_width_coord);
 
-
+%%%%%%%%Ways to improve, average the values in the coordinate arrays%%%%
 
 width_coord = [];
 height_coord = [];
