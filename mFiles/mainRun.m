@@ -1,5 +1,5 @@
 figure,
-img = imread('fundus3.png');
+img = imread('gs1.png');
 %gray = rgb2gray(img);
 %J = imadjust(gray);
 im = im2bw(img);

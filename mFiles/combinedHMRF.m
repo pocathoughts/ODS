@@ -1,5 +1,5 @@
 figure,
-img = imread('fundus2.png');
+img = imread('gs2.jpg');
 gray = rgb2gray(img);
 J = imadjust(gray);
 im = im2bw(img);
@@ -9,6 +9,8 @@ im = im2bw(img);
 %uses best thresholds
 
 BW2 = bwareaopen(bw, 130);
+SE = strel('disk', 4);
+BW2 = imdilate(BW2,SE);
 %above stuff gets ride of noise, only keeps big chunks of OD
 
 subplot(3,4,1);
@@ -37,8 +39,9 @@ disp(x);
 %is SUPA time intensive so we only wnat it to work on the area we need!
 
 
-
-
+i = 0
+while i < 2 
+%we wnat to run the HMRF algorithm twice to get a filled in image
 
 mex BoundMirrorExpand.cpp;
 mex BoundMirrorShrink.cpp;
@@ -66,43 +69,52 @@ imwrite(uint8(X*120),'Finitial labels.png');
 imwrite(uint8(X*120),'Funfinal labels.png');
 
 butter = imread('Funfinal labels.png');
+butterbw = im2bw(butter);
 
 subplot(3,4,3);
 imshow(butter);
 title('butter');
 
+DisplayODContour(img, butter, butterbw)
+
+toc;
+
+i = i + 1
+end
 %%%%%%%END OF WORKING SHIT%%%%%%%%%%%%%%%
 
 
-imbut = im2bw(butter);
+% imbut = im2bw(butter);
+% 
+% Z = edge(imbut, 'canny',0.75);
+% 
+% imwrite(uint8(Z*255),'Fedge.png');
+% 
+% imbut=double(imbut);
+% imbut=gaussianBlur(imbut,3);
+% imwrite(uint8(imbut),'Fblurred image.png');
+% 
+% k=2;
+% EM_iter=10; % max num of iterations
+% MAP_iter=10; % max num of iterations
+% 
+% tic;
+% fprintf('Performing k-means segmentation\n');
+% [X, mu, sigma]=image_kmeans(imbut,k);
+% imwrite(uint8(X*120),'Finitial labels.png');
+% 
+% [X, mu, sigma]=HMRF_EM(X,imbut,Z,mu,sigma,k,EM_iter,MAP_iter);
+% imwrite(uint8(X*120),'FINALofallIMAGES.png');
+% 
+% final = imread('FINALofallIMAGES.png');
+% finalbw = im2bw(final);
+% 
+% subplot(3,4,4);
+% imshow(final);
+% title('final');
+% 
+% subplot(3,4,5);
+% imshow(finalbw);
+% title('donezo');
 
-Z = edge(imbut, 'canny',0.75);
-
-imwrite(uint8(Z*255),'Fedge.png');
-
-imbut=double(imbut);
-imbut=gaussianBlur(imbut,3);
-imwrite(uint8(imbut),'Fblurred image.png');
-
-k=2;
-EM_iter=10; % max num of iterations
-MAP_iter=10; % max num of iterations
-
-tic;
-fprintf('Performing k-means segmentation\n');
-[X, mu, sigma]=image_kmeans(imbut,k);
-imwrite(uint8(X*120),'Finitial labels.png');
-
-[X, mu, sigma]=HMRF_EM(X,imbut,Z,mu,sigma,k,EM_iter,MAP_iter);
-imwrite(uint8(X*120),'FINALofallIMAGES.png');
-
-final = imread('FINALofallIMAGES.png');
-final = im2bw(final);
-
-subplot(3,4,4);
-imshow(final);
-title('donezo');
-
-
-toc;
 

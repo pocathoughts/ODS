@@ -1,5 +1,5 @@
 figure,
-img = imread('fundus3.png');
+img = imread('fundus2.png');
 gray = rgb2gray(img);
 J = imadjust(gray);
 im = im2bw(img);
@@ -71,13 +71,18 @@ subplot(3,4,3);
 imshow(butter);
 title('butter');
 
-Z = edge(BW2,'canny',0.75);
+%%%%%%%END OF WORKING SHIT%%%%%%%%%%%%%%%
+
+
+imbut = im2bw(butter);
+
+Z = edge(imbut, 'canny',0.75);
 
 imwrite(uint8(Z*255),'Fedge.png');
 
-BW2=double(BW2);
-BW2=gaussianBlur(BW2,3);
-imwrite(uint8(BW2),'Fblurred image.png');
+imbut=double(imbut);
+imbut=gaussianBlur(imbut,3);
+imwrite(uint8(imbut),'Fblurred image.png');
 
 k=2;
 EM_iter=10; % max num of iterations
@@ -85,9 +90,34 @@ MAP_iter=10; % max num of iterations
 
 tic;
 fprintf('Performing k-means segmentation\n');
-[X, mu, sigma]=image_kmeans(BW2,k);
+[X, mu, sigma]=image_kmeans(imbut,k);
 imwrite(uint8(X*120),'Finitial labels.png');
 
-[X, mu, sigma]=HMRF_EM(X,BW2,Z,mu,sigma,k,EM_iter,MAP_iter);
-imwrite(uint8(X*120),'Funfinal labels.png');
+[X, mu, sigma]=HMRF_EM(X,imbut,Z,mu,sigma,k,EM_iter,MAP_iter);
+imwrite(uint8(X*120),'FINALofallIMAGES.png');
+
+final = imread('FINALofallIMAGES.png');
+finalbw = im2bw(final);
+
+subplot(3,4,4);
+imshow(final);
+title('final');
+
+subplot(3,4,5);
+imshow(finalbw);
+title('donezo');
+
+
+
+hold on, title('Original Image');
+mask = false(size(img));
+mask(50:150,40:170) = true;
+bw = activecontour(grayfinal, final);
+
+contour(bw,[0.5 0.5],'r');
+legend('Initial Contour','Final Contour');
+figure, imshow(bw)
+title('Segmented Image');
+
 toc;
+

@@ -19,8 +19,7 @@ for i = 1:x,
 end
 
 %now we need to find the first place in which we get a value
-disp(height);
-disp(width);
+
 
 x = width;
 y = height;
