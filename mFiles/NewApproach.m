@@ -1,4 +1,4 @@
-img = imread('gs2.jpg');
+img = imread('gs4.jpg');
 
 gray = rgb2gray(img);
 Supa_grayfundus = imadjust(gray);
@@ -28,7 +28,7 @@ rgbFundus = cat(3, Supa_grayfundus, Supa_grayfundus, Supa_grayfundus);
 % hsvfundus = rgb2hsv(rgbImage);
 [bw, maskedRGBImage] = BestHSVMask(rgbFundus); 
 
-BW2 = bwareaopen(bw, 200);
+BW2 = bwareaopen(bw, 250);
 
 SE = strel('disk', 10);
 BW2 = imdilate(BW2,SE);
@@ -49,7 +49,7 @@ imshow(maskedRGBImage);
 title('hsvfundus');
 
 figure,
-imshow(rgbImage);
+imshow(rgbFundus);
 title('rgbimage');
 
 % %# read and display image
@@ -71,41 +71,41 @@ title('rgbimage');
 
 %we wnat to run the HMRF algorithm twice to get a filled in image
 
-% mex BoundMirrorExpand.cpp;
-% mex BoundMirrorShrink.cpp;
-% 
-% 
-% 
-% Z = edge(BW2,'canny',0.75);
-% 
-% imwrite(uint8(Z*255),'Fedge.png');
-% 
-% BW2=double(BW2);
-% BW2=gaussianBlur(BW2,3);
-% imwrite(uint8(BW2),'Fblurred image.png');
-% 
-% k=2;
-% EM_iter=10; % max num of iterations
-% MAP_iter=10; % max num of iterations
-% 
-% tic;
-% fprintf('Performing k-means segmentation\n');
-% [X, mu, sigma]=image_kmeans(BW2,k);
-% imwrite(uint8(X*120),'Finitial labels.png');
-% 
-% [X, mu, sigma]=HMRF_EM(X,BW2,Z,mu,sigma,k,EM_iter,MAP_iter);
-% imwrite(uint8(X*120),'Funfinal labels.png');
-% 
-% butter = imread('Funfinal labels.png');
-% butterbw = im2bw(butter);
-% 
-% subplot(3,4,3);
-% imshow(butter);
-% title('butter');
-% 
-% DisplayODContour(img, butter, butterbw)
-% 
-% toc;
+mex BoundMirrorExpand.cpp;
+mex BoundMirrorShrink.cpp;
+
+
+
+Z = edge(BW2,'canny',0.89);
+
+imwrite(uint8(Z*255),'Fedge.png');
+
+BW2=double(BW2);
+BW2=gaussianBlur(BW2,3);
+imwrite(uint8(BW2),'Fblurred image.png');
+
+k=2;
+EM_iter=10; % max num of iterations
+MAP_iter=10; % max num of iterations
+
+tic;
+fprintf('Performing k-means segmentation\n');
+[X, mu, sigma]=image_kmeans(BW2,k);
+imwrite(uint8(X*120),'Finitial labels.png');
+
+[X, mu, sigma]=HMRF_EM(X,BW2,Z,mu,sigma,k,EM_iter,MAP_iter);
+imwrite(uint8(X*120),'Funfinal labels.png');
+
+butter = imread('Funfinal labels.png');
+butterbw = im2bw(butter);
+
+subplot(3,4,3);
+imshow(butter);
+title('butter');
+
+DisplayODContour(img, butter, butterbw)
+
+toc;
 
 
 
