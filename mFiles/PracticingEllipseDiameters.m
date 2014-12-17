@@ -12,6 +12,7 @@ rgbFundus = cat(3, Supa_grayfundus, Supa_grayfundus, Supa_grayfundus);
 [bw, maskedRGBImage] = BestHSVMask(rgbFundus); 
 
 BW2 = bwareaopen(bw, 250);
+%M3 = M2 & ~bwareaopen(M2,8000);  A POSSIBLE SOLUTION
 
 SE = strel('disk', 10);
 BW2 = imdilate(BW2,SE);
@@ -46,19 +47,24 @@ end
 figure,
 imshow(img);
 title('diameters');
+
+% % 
+% % %[width_coordH, height_coordH, approx_horiz_diameter] = ellipseHorizDiameter(X, Y)
+%  [width_coordV, height_coordV, approx_vertical_diameter] = ellipseVertDiameter(X, Y)
+% % %imshow(plot([height_coordH(1),height_coordH(2)],[width_coordH(1),width_coordH(2)],'Color','g','LineWidth',2));
+%  imshow(plot([width_coordV(1),width_coordV(2)],[height_coordV(1),height_coordV(2)],'Color','g','LineWidth',2));
+% 
+ 
+% how do i get this to work 
+% if approx_vertical_diameter > 450
+%     disp('The threshold failed');
+%     break
+% end
+
+
+% figure,
+% imshow(img);
 hold on
-
-[width_coordV, height_coordV, approx_vertical_diameter] = ellipseVertDiameter(X, Y)
-% plot([height_coordH(1),height_coordH(2)],[width_coordH(1),width_coordH(2)],'Color','g','LineWidth',2);
-imshow(plot([width_coordV(1),width_coordV(2)],[height_coordV(1),height_coordV(2)],'Color','g','LineWidth',2));
-
-hold off,
-
-
-imagesc(img);
-figure,
-imshow(img);
-hold on,
 % To plot it the ellipse: 
 plot(X, Y);
 

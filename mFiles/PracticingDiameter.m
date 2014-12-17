@@ -1,5 +1,5 @@
 figure,
-img = imread('gs7.jpg');
+img = imread('gs3.jpg');
 imshow(img);
 title('original image');
 
@@ -60,13 +60,15 @@ imwrite(uint8(X*120),'Funfinal labels.png');
 
 %we want to use that final filled in picture to get our contours
 hold on,
+
 butter = imread('Funfinal labels.png');
 butterbw = im2bw(butter);
 
 %Method I made that displays the contours
 DisplayODContour(img, butter, butterbw)
 
-subplot(3,4,3);
+
+figure,
 imshow(butter);
 title('butter');
 toc;
@@ -134,6 +136,8 @@ hold on,
 [width_coordV, height_coordV, approx_vertical_diameter] = ellipseVertDiameter(X, Y)
 %imshow(plot([height_coordH(1),height_coordH(2)],[width_coordH(1),width_coordH(2)],'Color','g','LineWidth',2));
 imshow(plot([width_coordV(1),width_coordV(2)],[height_coordV(1),height_coordV(2)],'Color','g','LineWidth',2));
+
+
 
 hold off,
 

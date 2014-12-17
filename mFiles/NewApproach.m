@@ -1,4 +1,15 @@
-img = imread('gs4.jpg');
+img = imread('gs10.jpg');
+
+%Lets the channels we care about
+%red
+RC = img(:,:,1);
+%green
+GC = img(:,:,2);
+
+%let's get rid of some more blood vessels in the red image
+H3 = fspecial('gaussian',5, 5);
+RC = imfilter(RC, H3, 'circular');
+
 
 gray = rgb2gray(img);
 Supa_grayfundus = imadjust(gray);
@@ -28,30 +39,16 @@ rgbFundus = cat(3, Supa_grayfundus, Supa_grayfundus, Supa_grayfundus);
 % hsvfundus = rgb2hsv(rgbImage);
 [bw, maskedRGBImage] = BestHSVMask(rgbFundus); 
 
+
 BW2 = bwareaopen(bw, 250);
+figure, imshow(BW2), title('after opening');
 
 SE = strel('disk', 10);
 BW2 = imdilate(BW2,SE);
+figure, imshow(BW2), title('after dilating');
 
 imshow(BW2);
-title('after opening function');
-
-figure,
-imshow(betterFundus);
-title('adaptive hist');
-
-figure,
-imshow(Supa_grayfundus);
-title('supergray img');
-
-figure,
-imshow(maskedRGBImage);
-title('hsvfundus');
-
-figure,
-imshow(rgbFundus);
-title('rgbimage');
-
+title('after opening function and dilate function');
 % %# read and display image
 % img = imread('autumn.tif');
 % figure,imshow(img)
@@ -106,7 +103,10 @@ title('butter');
 DisplayODContour(img, butter, butterbw)
 
 toc;
+BUTTER = imdilate(butterbw, se);
+BUTTER = butterbw & ~bwareaopen(butterbw, 90000);
 
+figure, imshow(BUTTER), title('BUTTER');
 
 
 

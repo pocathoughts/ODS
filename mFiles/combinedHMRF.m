@@ -1,5 +1,5 @@
 figure,
-img = imread('gs2.jpg');
+img = imread('gs3.jpg');
 gray = rgb2gray(img);
 J = imadjust(gray);
 im = im2bw(img);
@@ -39,8 +39,7 @@ disp(x);
 %is SUPA time intensive so we only wnat it to work on the area we need!
 
 
-i = 0
-while i < 2 
+
 %we wnat to run the HMRF algorithm twice to get a filled in image
 
 mex BoundMirrorExpand.cpp;
@@ -79,8 +78,7 @@ DisplayODContour(img, butter, butterbw)
 
 toc;
 
-i = i + 1
-end
+
 %%%%%%%END OF WORKING SHIT%%%%%%%%%%%%%%%
 
 

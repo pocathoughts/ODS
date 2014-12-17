@@ -14,11 +14,9 @@
 % disp(x);
 % disp(y);
 function DisplayODContour(orig_img, gray_image, bin_image)
+
 figure,
 imshow(orig_img);
-gray = rgb2gray(orig_img);
-J = imadjust(gray);
-im = im2bw(orig_img);
 hold on, title('Original Image');
 mask = false(size(orig_img));
 mask(50:150,40:170) = true;
@@ -28,6 +26,11 @@ contour(bw,[0.5 0.5],'b');
 legend('Initial Contour','Final Contour');
 figure, imshow(bw)
 title('Segmented Image');
+
+
+%now we need to find the first place in which we get a value
+
+  
 % gray = rgb2gray(img);
 % J = imadjust(gray);
 % im = im2bw(img);

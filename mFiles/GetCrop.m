@@ -4,7 +4,7 @@ function B = GetCrop(img)
 
 horizontal_middle = x / 2;
 top_bound = horizontal_middle - 400;
-bottom_bound = horizontal_middle + 400;
+bottom_bound = horizontal_middle + 100;
 
 figure, 
 imshow(img);
@@ -17,9 +17,9 @@ plot([0,y], [bottom_bound, bottom_bound],'Color','g','LineWidth',2);% J = entrop
 B = imcrop(img,[0 top_bound x 800]);
 %B is now the image that we care about
 
-figure,
-imshow(B);
-title('cropped image');
+% figure,
+% imshow(B);
+% title('cropped image');
 
 
 % gray = rgb2gray(B);

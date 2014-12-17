@@ -1,4 +1,4 @@
-img = imread('gs7.jpg');
+img = imread('gs4.jpg');
 figure,
 imshow(img);
 title('original image');
@@ -33,19 +33,32 @@ figure,
 imshow(GPimadjgray);
 title('imadjust on greenPlane image');
 
-normalizedGP = localnormalize(GPimadjgray, 100, 100);
+fakergb = cat(3, GPimadjgray, GPimadjgray, GPimadjgray);
+
+bw = BestHSVMask(fakergb);
 
 figure,
-imshow(normalizedGP);
-title('normalized GP');
+imshow(bw);
+title('hsvmasked image');
 
-rgbGrayIMG = cat(3, greenPlane, greenPlane, greenPlane);
+betterbw = bwareaopen(bw, 500);
 
-
-
-%not 100 percent sure how its gonna help, but something to mess with
-ln= localnormalize(greenPlane,100,100);
-
+figure,
+imshow(betterbw);
+title('img after opening');
+% normalizedGP = localnormalize(GPimadjgray, 100, 100);
+% 
+% figure,
+% imshow(normalizedGP);
+% title('normalized GP');
+% 
+% rgbGrayIMG = cat(3, greenPlane, greenPlane, greenPlane);
+% 
+% 
+% 
+% %not 100 percent sure how its gonna help, but something to mess with
+% ln= localnormalize(greenPlane,100,180);
+% 
 
 %newln = adapthisteq(ln);
 %using imadjust on ln doesnt do much same goes for adapthisteq
@@ -56,10 +69,3 @@ ln= localnormalize(greenPlane,100,100);
 % title('betterbw');
 
 
-figure,
-imshow(ln);
-title('ln');
-
-Supa_grayfundus = imadjust(gray);
-
-betterFundus = adapthisteq(Supa_grayfundus);

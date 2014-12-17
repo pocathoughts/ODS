@@ -1,4 +1,4 @@
-img = imread('gs7.jpg');
+img = imread('badf2.jpg');
 greenPlane = img(:, :, 2);
 figure, imshow(img), title('original image');
 
@@ -6,18 +6,36 @@ gimg = rgb2gray(img);
 adaptgray = adapthisteq(gimg);
 imadjgray = imadjust(gimg);
 
-rgbimg = cat(3, gimg, gimg, gimg);
+figure, imshow(imadjgray), title('final gray image');
+
+rgbimg = cat(3, imadjgray, imadjgray, imadjgray);
 
 goodimg = HSVMASKNEW(rgbimg);
 figure,
 imshow(goodimg);
 title('after mask');
 
-betterimg = goodimg & ~bwareaopen(goodimg,35000);
+se90 = strel('line', 3, 90);
+se0 = strel('line', 3, 0);
+
+BWsdil = imdilate(goodimg, [se90 se0]);
+figure, imshow(BWsdil), title('dilated gradient mask');
+
+betterimg = BWsdil & ~bwareaopen(BWsdil,35000);
+
+croppedimg = GetCrop(betterimg);
+cleanimg = bwareaopen(croppedimg, 500);
 
 figure,
 imshow(betterimg);
 title('after removing large chunks');
+
+figure,
+imshow(cleanimg);
+title('after removing small chunks');
+
+
+figure, imshow(croppedimg), title('watershed');
 
 % hsv = rgb2hsv(img);
 % greenPlane = hsv(:, :, 2);
