@@ -1,15 +1,12 @@
-%%TO DO 
-        %make scanning circles over possible regions then do & operator
-
 % The point of this file is to try and segment out as much of the OD 
 % as humanly possible based of thresholding using imfuse
 % This works by creating a circular mask and only counting points within the
 % circle that are left after masking it. This has many benefits because it takes away the
 % human error of not being able to select all the points, however, this presents an issue
 % because the od might be ouside the circle or not enough will be contained
-
+close all
 %%%%%%%%%%%%%%%%%%%%%%Reading in Image%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-img1 = imread('01_dr.jpg');
+img1 = imread('06_g.jpg');
 %figure, imshow(img1), title('original');
 
 %%%%%%%%%%%%%%%%%%%%%%Messing with Grascale Version%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,16 +15,12 @@ rc = img1(:,:,1);
 grayrc = imadjust(rc);
 %figure, imshow(grayrc), title('imadjsut on red channel');
 imadjgray = imadjust(grey);
-gc = img1(:,:,2);
-
 
 %%%%%%%%%%%%%%%%%%%%%%Combining Grayscale Images into Fake RGB%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fake1 = cat(3, rc, rc, rc);
-fake2 = cat(3, gc, rc, gc);
 brightfake = cat(3, grayrc, grayrc, grayrc);
 rgbcombine = cat(3, imadjgray, imadjgray, imadjgray);
-fakegray = rgb2gray(fake2);
-grayrgb = cat(3, fakegray, fakegray, fakegray);
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%Applying averaging filter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,8 +51,8 @@ figure, imshow(weirdcombined), title('what happened?');
 % 
 % % J = entropyfilt(weirdcombined);
 % % figure, imshow(J), title('what the hell, why not');
-combined = imfuse(brightfake, fake2,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]);
-figure, imshow(combined), title('red and green mixed channel');
+% combined = imfuse(brightfake, fake2,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]);
+% figure, imshow(combined), title('red and green mixed channel');
 % % % 
 % % % newcombined = imfuse(fake1, combined,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]);
 % % % figure, imshow(newcombined), title('first iteration with another red channel fuse');
@@ -96,6 +89,11 @@ figure, imshow(mask1), title('new mask');
 mask2 = BestHSVMask(supabright);
 figure, imshow(mask2), title('mask2');
 
+mask3 = BestHSVMask(brightblurcombine);
+figure, imshow(mask3), title('mask3 bright blur combine');
+
+testBW = bwareaopen(mask3, 20);
+figure, imshow(testBW), title('the one to compare left and right');
 %%%%%%%%%%%%%%%%%%%%%%%Creating Left adn Right Half to find Side to Be Processed%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 left = mask1(:, 1 : end/2);
 % figure, imshow(left), title('left half');
@@ -118,18 +116,16 @@ disp(maskX);
 % %%%%%%%%%%%%%%%%%%%%%%Start of getting parts to work with for contours%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%LeftSides%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [r c] = meshgrid(1:maskY, 1:maskX);
-CLeft = sqrt((r - 900).^2 + (c - 1100).^2) <= 200;
-% figure, imshow(CLeft), title('left mask');
-LeftTest = mask1 & CLeft;
-
+CLeft = sqrt((r - maskY*.24).^2 + (c - maskX*.5).^2) <= 250;
+LeftTest = testBW & CLeft;
+figure, imshow(LeftTest), title('left mask to compare leftvalue');
 
 
 % %%%%%%%%%%%%%%%%%%%%%%RightSides%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [rr cc] = meshgrid(1:maskY, 1:maskX);
-CRight = sqrt((rr - 2900).^2 + (cc-1150).^2) <= 200;
-figure, imshow(CRight);
-RightTest = mask1 & CRight;
-
+CRight = sqrt((rr - maskY*.75).^2 + (cc-maskX*.47).^2) <= 250;
+RightTest = testBW & CRight;
+figure, imshow(RightTest), title('right mask to compare left value');
 
 
 % %%%%%%%%%%%%%%%%%%%%%%Seeing which side is brighter (SHOULD BE OD SIDE)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,59 +155,62 @@ disp(rightWhite);
 % %%%%%%PROCESSING THE LEFT SIDE OF THE IMAGE
 if (leftWhite > rightWhite)
    [r c] = meshgrid(1:maskY, 1:maskX);
-    CLeft = sqrt((r - 900).^2 + (c - 1100).^2) <= 200;
-    % figure, imshow(CLeft), title('left mask');
+    CLeft = sqrt((r - maskY/7).^2 + (c - maskX/2).^2) <= 200;
+    figure, imshow(CLeft), title('left mask maskY/8');
     imageToCompare1 = mask1 & CLeft;
 
     [r2 c2] = meshgrid(1:maskY, 1:maskX);
-    CLeft2 = sqrt((r2 - 600).^2 + (c2 - 1100).^2) <= 200;
-    % figure, imshow(CLeft), title('left mask');
+    CLeft2 = sqrt((r2 - maskY*.27).^2 + (c2 - maskX*.55).^2) <= 200;
+    figure, imshow(CLeft), title('masky/8 maskx*.55');
     imageToCompare2 = mask1 & CLeft2;
 
     [r3 c3] = meshgrid(1:maskY, 1:maskX);
-    CLeft3 = sqrt((r3 - 700).^2 + (c3 - 1000).^2) <= 200;
-    figure, imshow(CLeft3);
+    CLeft3 = sqrt((r3 - maskY*.32).^2 + (c3 - maskX*.45).^2) <= 200;
+    figure, imshow(CLeft3), title('masky/8 maskx*.45');
     imageToCompare3 = mask1 & CLeft3;
 
     [r4 c4] = meshgrid(1:maskY, 1:maskX);
-    CLeft4 = sqrt((r4 - 700).^2 + (c4 - 1300).^2) <= 200;
-    figure, imshow(CLeft4);
+    CLeft4 = sqrt((r4 - maskY*.2).^2 + (c4 - maskX/2).^2) <= 200;
+    figure, imshow(CLeft4), title('masky*.2 maskx/2');
     imageToCompare4 = mask1 & CLeft4;
 
     finalMask = imageToCompare1 | imageToCompare2 | imageToCompare3 | imageToCompare4;
     figure, imshow(finalMask), title('final maskL');
     
-    [rF cF] = meshgrid(1:3504, 1:2336);
-    Final = sqrt((rF - 970).^2 + (cF - 1130).^2) <= 200;
+    [rF cF] = meshgrid(1:maskY, 1:maskX);
+    Final = sqrt((rF - maskY*.24).^2 + (cF - maskX/2).^2) <= 230;
+    
+    
+    Final = Final & finalMask;
     figure, imshow(Final), title('the final of all finals');
 
 % %%%%%%PROCESSING THE RIGHT SIDE OF THE IMAGE
 elseif (rightWhite > leftWhite)
    [rr cc] = meshgrid(1:maskY, 1:maskX);
-    CRight = sqrt((rr - 2900).^2 + (cc-1350).^2) <= 200;
+    CRight = sqrt((rr - maskY*.72).^2 + (cc-maskX*.45).^2) <= 200;
     figure, imshow(CRight);
     itc = mask1 & CRight;
 
     [rr2 cc2] = meshgrid(1:maskY, 1:maskX);
-    CRight2 = sqrt((rr2 - 2770).^2 + (cc2-1150).^2) <= 200;
-    % figure, imshow(CRight), title('right mask');
+    CRight2 = sqrt((rr2 - maskY*.7).^2 + (cc2- maskX*.45).^2) <= 200;
+    figure, imshow(CRight2), title('right mask masky*.7 maskX.45');
     itc2 = mask1 & CRight2;
 
     [rr3 cc3] = meshgrid(1:maskY, 1:maskX);
-    CRight3 = sqrt((rr3 - 2900).^2 + (cc3-1150).^2) <= 200;
-    figure, imshow(CRight3);
+    CRight3 = sqrt((rr3 - maskY*.75).^2 + (cc3-maskX*.45).^2) <= 200;
+    figure, imshow(CRight3), title('maskY*.75 maskx*.45');
     itc3 = mask1 & CRight3;
 
     [rr4 cc4] = meshgrid(1:maskY, 1:maskX);
-    CRight4 = sqrt((rr4 - 2900).^2 + (cc4 - 1000).^2) <= 200;
-    figure, imshow(CRight4);
+    CRight4 = sqrt((rr4 - maskY*.72).^2 + (cc4 - maskX*.5).^2) <= 200;
+    figure, imshow(CRight4), title('maskY*.72 maskX*.5');
     itc4 = mask1 & CRight4;
 
     finalMask = itc | itc2 | itc3 | itc4;
     figure, imshow(finalMask), title('finalMaskR');
 
     [rrF ccF] = meshgrid(1:maskY, 1:maskX);
-    Final = sqrt((rrF - 2850).^2 + (ccF - 1130).^2) <= 240;
+    Final = sqrt((rrF - maskY*.74).^2 + (ccF - maskX*.47).^2) <= 240;
     Final = Final & finalMask;
     figure, imshow(Final), title('final mask for all time');
 
